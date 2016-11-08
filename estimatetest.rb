@@ -5,16 +5,18 @@ filename = DateTime.now.strftime("%d%b%Y%H%M%S")
 $log = Logger.new ("#{filename}estimate-test.log")
 
 
-print "User name?: "
+print "Nitro User name?: "
 user_name = gets.chomp
 
-print "Password?: "
+print "Nitro Password?: "
 password = gets.chomp
+$log.info = "User name: #{user_name}"
 
 browser = Watir::Browser.new :chrome
+
 #Navigate to environment and login
 browser.goto "https://nitroqa.mydatainmotion.com"
-$log.info ("Confirm URL location")
+$log.info ("Confirm Nitro URL")
 $log.info p browser.url
 browser.text_field(:id => "email").set "#{user_name}"
 browser.text_field(:id => "password").set "#{password}"
@@ -89,9 +91,10 @@ browser.element(:id => "build-form-submit").click
 
 #Confirm estimate page
 sleep 5
-$log.info p "Estimate URL"
+$log.info p "Initial Estimate URL"
 $log.info p browser.url
 browser.screenshot.save ("/Users/ #{filename}.jpg")
+$log.info p "Screenshot Saved of Estimate under '/Users/ #{filename}.jpg'"
 
 browser.element(:class => "dropdown-toggle", :index =>4).click
 sleep 1
@@ -125,8 +128,9 @@ browser.element(:class => 'btn', :class => 'btn-primary', :class => 'btn-lg').cl
 sleep 1
 browser.element(:class => 'btn', :class => 'btn-default', :index =>4).click
 sleep 30
+$log.info p "Ending Estimate URL page"
 $log.info p browser.url
-$log.info p "Testing Complete, BITCH!"
+$log.info p "Nitro Estimate Testing Complete, BITCH!"
 
 #browser.file_field(id: "project_document_doc").set(file.expand_path("../Users/#{filename}.jpg"))
 #browser.element(:link_text => "Upload Document").click
