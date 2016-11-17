@@ -5,17 +5,39 @@ filename = DateTime.now.strftime("%d%b%Y%H%M%S")
 $log = Logger.new ("#{filename}estimate-test.log")
 
 
+#Environments
+#Demo 1-19
+#DevTB 1-4
+#QA
+
+
+print "What environment is this going to be run in? (DevTB, Demo, QA):"
+env_name = gets.chomp
+
+print "Which server number? (Put 0 if QA)"
+env_number = gets.chomp
+
+if "#{env_name}" == 'DevTB' then env_add = "nitrodevtb#{env_number}.mydatainmotion.com"
+elsif "#{env_name}" == 'Demo' then env_add = "nitrodemo#{env_number}.mydatainmotion.com"
+elsif "#{env_name}" == 'QA' then env_add ="nitroqa.mydatainmotion.com"
+else p "Invalid Environment Name"
+end
+
+puts "https://#{env_add}"
+#p "What environment is this test script going to be run in?: "
+#env_add = gets.chomp
+
 print "Nitro User name?: "
 user_name = gets.chomp
 
 print "Nitro Password?: "
 password = gets.chomp
-$log.info = "User name: #{user_name}"
+$log.info p "User name: #{user_name}"
 
 browser = Watir::Browser.new :chrome
 
 #Navigate to environment and login
-browser.goto "https://nitroqa.mydatainmotion.com"
+browser.goto "https://#{env_add}"
 $log.info ("Confirm Nitro URL")
 $log.info p browser.url
 browser.text_field(:id => "email").set "#{user_name}"
@@ -24,8 +46,14 @@ browser.element(:name => "button").click
 $log.info ("Confirm successful login")
 $log.info p browser.title
 
+if browser.element(:link_text => 'Acknowledge').exists?
+  then browser.element(:link_text => "Acknowledge").click
+else p "No Time Sheet Verification"
+end
+
+
 #Ensure we are on the proper starting page
-browser.goto "https://nitroqa.mydatainmotion.com/estimates"
+browser.goto "https://#{env_add}/estimates"
 $log.info ("Confirm URL location")
 $log.info p browser.url
 
@@ -37,6 +65,7 @@ browser.element(:link_text => "Create a Test Estimate").wait_until_present
 browser.element(:link_text => "Create a Test Estimate").click
 
 #IF verify screen present clear through it
+sleep 5
 if browser.element(:link_text => 'Verify').exists?
   then browser.element(:link_text => "Verify").click
   browser.element(:id => "home-submit").wait_until_present
@@ -53,9 +82,13 @@ $log.info p browser.url
 browser.element(:id => "add_new_product").click
 browser.text_field(:id => "item_location").wait_until_present
 browser.text_field(:id => "item_location").set "Whole House"
+sleep 1
 browser.text_field(:id => "item_quantity").set "2"
+sleep 1
 browser.text_field(:id => "item_width").set "2500"
+sleep 1
 browser.text_field(:id => "item_height").set "1"
+sleep 1
 browser.element(:link_text => "Roofing").click
 sleep 1
 browser.link(text: 'None').wait_until_present
@@ -125,7 +158,7 @@ sleep 30
 #browser.element(:class => 'btn', :class => 'btn-default', :index =>19).click
 browser.element(:class => 'btn', :class => 'btn-primary', :class => 'btn-lg').click
 #browser.send_keys :enter
-sleep 1
+sleep 2
 browser.element(:class => 'btn', :class => 'btn-default', :index =>4).click
 sleep 30
 $log.info p "Ending Estimate URL page"
